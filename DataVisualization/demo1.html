@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset=utf-8>
+        <title>Three Js Test Demo 1</title>
+        <style>
+            body { margin: 0; }
+            canvas { width: 100%; height: 100% }
+        </style>
+    </head>
+    <body>
+        <script src="build/three.js"></script>
+        <script src="examples/js/controls/TrackballControls.js"></script>
+        <script src="examples/js/Detector.js"></script>
+        <script src="examples/js/libs/stats.min.js"></script>
+        <script>
+            var container, stats;
+            var cross;
+            var controls;
+            var scene;
+            
+
+            var camera;
+            var renderer;
+            init();
+            runAlways();
+
+            function init()
+            {
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+                //鼠标控制视角
+                controls = new THREE.TrackballControls( camera );
+                controls.rotateSpeed = 10.0;//设置摄像头的旋转速度
+                controls.zoomSpeed = 3.2;//设置摄像头的放大速度
+                controls.panSpeed = 4.8;//设置摄像头的移动速度
+                controls.noZoom = false;
+                controls.noPan = false;
+                controls.staticMoving = true;
+                controls.dynamicDampingFactor = 0.3;
+                controls.keys = [ 65, 83, 68 ];
+                controls.addEventListener( 'change', flash );//设置控制器响应事件函数
+                //end
+                renderer = new THREE.WebGLRenderer();
+                renderer.setSize( window.innerWidth, window.innerHeight-3);//设置画布大小
+                scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );//背景色 灰色
+                renderer.setClearColor( scene.fog.color );//设置背景色
+                document.body.appendChild( renderer.domElement );
+                var cubegeometry = new THREE.BoxGeometry( 5, 15, 5 );
+                var cubematerial = new THREE.MeshBasicMaterial( { color: 0x0000ff,opacity : 0.2,transparent : true, } );
+                var cube = new THREE.Mesh( cubegeometry, cubematerial );//绘画一个立方体
+                scene.add( cube );
+                camera.position.z = 20;
+                cube.rotation.x += 0.5;
+                cube.rotation.y += 0.1;
+                //画线段
+                var linematerial = new THREE.LineBasicMaterial({ color: 0x0000ff });//线段的材料类型
+                var linegeometry = new THREE.Geometry();//线段的几何体对象
+                    linegeometry.vertices.push(new THREE.Vector3(-10, 0, 0));
+                    linegeometry.vertices.push(new THREE.Vector3(0, 10, 0));
+                    linegeometry.vertices.push(new THREE.Vector3(10, 0, 0));
+                    linegeometry.vertices.push(new THREE.Vector3(0, 0, 10));
+                    linegeometry.vertices.push(new THREE.Vector3(-10, 0, 0));
+                var line = new THREE.Line(linegeometry, linematerial);
+                scene.add(line);//视角中增加线
+                renderer.render(scene, camera);
+            }  
+            function runAlways() {
+                requestAnimationFrame( runAlways );
+                controls.update();
+            }
+
+            function flash() {
+                renderer.render( scene, camera );
+            }
+
+        </script>
+    </body>
+</html>
